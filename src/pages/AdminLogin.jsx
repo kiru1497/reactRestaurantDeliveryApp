@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 import {
   ShieldCheck,
@@ -17,6 +18,7 @@ import { loginAdmin, clearAuthError } from "../features/auth/authSlice";
 
 export default function AdminLogin() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { isLoading, error } = useSelector((state) => state.auth);
 
@@ -29,7 +31,9 @@ export default function AdminLogin() {
     try {
       await dispatch(loginAdmin({ email, password })).unwrap();
 
-      console.log("Admin logged in successfully");
+      console.log("Admin login successful!");
+
+      navigate("/admin/dashboard", { replace: true });
     } catch (error) {
       console.error(error);
     }
