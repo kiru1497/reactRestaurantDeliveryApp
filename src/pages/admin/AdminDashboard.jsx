@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
   Tags,
@@ -8,36 +10,7 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 
-const dashboardCards = [
-  {
-    title: "Categories",
-    value: 4,
-    icon: Tags,
-    link: "/admin/categories",
-    linkText: "View all categories",
-  },
-  {
-    title: "Recipes",
-    value: 4,
-    icon: BookOpen,
-    link: "/admin/recipe",
-    linkText: "View all recipes",
-  },
-  {
-    title: "Total Orders",
-    value: 5,
-    icon: ClipboardList,
-    link: "/admin/order",
-    linkText: "View all orders",
-  },
-  {
-    title: "Pending Orders",
-    value: 1,
-    icon: Clock,
-    link: "/admin/order",
-    linkText: "View pending orders",
-  },
-];
+import { fetchCategories } from "../../features/categories/categoriesSlice";
 
 function DashboardCard({ card }) {
   const Icon = card.icon;
@@ -70,6 +43,49 @@ function DashboardCard({ card }) {
 }
 
 export default function AdminDashboard() {
+  const dispatch = useDispatch();
+
+  const { items: categories, status: categoryStatus } = useSelector(
+    (state) => state.categories,
+  );
+
+  useEffect(() => {
+    if (categoryStatus === "idle") {
+      dispatch(fetchCategories());
+    }
+  }, [dispatch, categoryStatus]);
+
+  const dashboardCards = [
+    {
+      title: "Categories",
+      value: categories.length,
+      icon: Tags,
+      link: "/admin/categories",
+      linkText: "View all categories",
+    },
+    {
+      title: "Recipes",
+      value: 4,
+      icon: BookOpen,
+      link: "/admin/recipe",
+      linkText: "View all recipes",
+    },
+    {
+      title: "Total Orders",
+      value: 5,
+      icon: ClipboardList,
+      link: "/admin/order",
+      linkText: "View all orders",
+    },
+    {
+      title: "Pending Orders",
+      value: 1,
+      icon: Clock,
+      link: "/admin/order",
+      linkText: "View pending orders",
+    },
+  ];
+
   return (
     <div className="mx-auto w-full max-w-7xl">
       {/* Page heading */}
