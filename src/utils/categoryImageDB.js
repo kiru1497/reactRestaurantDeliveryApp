@@ -1,5 +1,5 @@
 const DB_NAME = "RestaurantDeliveryDB";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORE_NAME = "categoryImages";
 
 const openDatabase = () => {
@@ -14,9 +14,15 @@ const openDatabase = () => {
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
 
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, {
+      if (!db.objectStoreNames.contains("categoryImages")) {
+        db.createObjectStore("categoryImages", {
           keyPath: "categoryId",
+        });
+      }
+
+      if (!db.objectStoreNames.contains("recipeImages")) {
+        db.createObjectStore("recipeImages", {
+          keyPath: "recipeId",
         });
       }
     };
@@ -29,7 +35,7 @@ const openDatabase = () => {
   });
 };
 
-// Save an image
+// Save category image.
 export const saveCategoryImage = async (categoryId, file) => {
   const db = await openDatabase();
 
@@ -59,7 +65,7 @@ export const saveCategoryImage = async (categoryId, file) => {
   });
 };
 
-// Retrieve an image
+// Retrieve category image.
 export const getCategoryImage = async (categoryId) => {
   const db = await openDatabase();
 
@@ -82,6 +88,7 @@ export const getCategoryImage = async (categoryId) => {
     };
 
     transaction.oncomplete = () => db.close();
+
     transaction.onerror = () => {
       db.close();
       reject(transaction.error);
@@ -89,7 +96,7 @@ export const getCategoryImage = async (categoryId) => {
   });
 };
 
-// Retrieve the original image Blob
+// Retrieve original category image Blob.
 export const getCategoryImageBlob = async (categoryId) => {
   const db = await openDatabase();
 
@@ -106,6 +113,7 @@ export const getCategoryImageBlob = async (categoryId) => {
     };
 
     transaction.oncomplete = () => db.close();
+
     transaction.onerror = () => {
       db.close();
       reject(transaction.error);
@@ -113,7 +121,7 @@ export const getCategoryImageBlob = async (categoryId) => {
   });
 };
 
-// Delete an image
+// Delete category image.
 export const deleteCategoryImage = async (categoryId) => {
   const db = await openDatabase();
 

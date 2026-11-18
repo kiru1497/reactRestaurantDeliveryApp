@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { fetchCategories } from "../../features/categories/categoriesSlice";
+import { fetchRecipes } from "../../features/recipes/recipesSlice";
 
 function DashboardCard({ card }) {
   const Icon = card.icon;
@@ -49,11 +50,19 @@ export default function AdminDashboard() {
     (state) => state.categories,
   );
 
+  const { items: recipes, status: recipeStatus } = useSelector(
+    (state) => state.recipes,
+  );
+
   useEffect(() => {
     if (categoryStatus === "idle") {
       dispatch(fetchCategories());
     }
-  }, [dispatch, categoryStatus]);
+
+    if (recipeStatus === "idle") {
+      dispatch(fetchRecipes());
+    }
+  }, [dispatch, categoryStatus, recipeStatus]);
 
   const dashboardCards = [
     {
@@ -65,7 +74,7 @@ export default function AdminDashboard() {
     },
     {
       title: "Recipes",
-      value: 4,
+      value: recipes.length,
       icon: BookOpen,
       link: "/admin/recipe",
       linkText: "View all recipes",
