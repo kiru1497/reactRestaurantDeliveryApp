@@ -3,8 +3,11 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AdminLogin from "./pages/AdminLogin";
+import UserHome from "./pages/UserHome";
 
 import AdminRoute from "./routes/AdminRoute";
+import UserRoute from "./routes/UserRoute";
+
 import AdminLayout from "./components/admin/AdminLayout";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -22,13 +25,18 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
 
+      {/* Protected customer routes */}
+      <Route element={<UserRoute />}>
+        <Route path="/home" element={<UserHome />} />
+      </Route>
+
       {/* Admin login */}
       <Route path="/admin/login" element={<AdminLogin />} />
 
       {/* Protected admin routes */}
       <Route element={<AdminRoute />}>
         <Route path="/admin" element={<AdminLayout />}>
-          {/* Default admin landing page */}
+          {/* Admin default landing page */}
           <Route index element={<Navigate to="dashboard" replace />} />
 
           <Route path="dashboard" element={<AdminDashboard />} />

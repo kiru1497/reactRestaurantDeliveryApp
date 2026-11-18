@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import {
   ArrowRight,
@@ -21,6 +21,7 @@ import { sendPasswordResetEmail } from "../firebase";
 export default function Login() {
   const dispatch = useDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const { isLoading, error } = useSelector((state) => state.auth);
 
@@ -44,8 +45,7 @@ export default function Login() {
 
       console.log("Logged in successfully");
 
-      setMessage("Welcome back! You are now signed in.");
-      setMessageType("success");
+      navigate("/home", { replace: true });
     } catch (error) {
       console.error(error);
     }
