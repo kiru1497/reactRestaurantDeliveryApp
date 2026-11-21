@@ -319,7 +319,7 @@ export default function Cart() {
                 {/* Checkout */}
                 <button
                   type="button"
-                  onClick={() => {}}
+                  onClick={() => navigate("/checkout")}
                   className="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 active:scale-[0.98]"
                 >
                   Proceed to Checkout

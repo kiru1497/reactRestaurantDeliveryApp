@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -12,6 +12,8 @@ import {
 
 import { fetchCategories } from "../../features/categories/categoriesSlice";
 import { fetchRecipes } from "../../features/recipes/recipesSlice";
+
+const STATUS_OPTIONS = ["Pending", "Delivered", "Failed"];
 
 function DashboardCard({ card }) {
   const Icon = card.icon;
@@ -54,6 +56,10 @@ export default function AdminDashboard() {
     (state) => state.recipes,
   );
 
+  // Get all orders from Redux
+  const ordersByUser = useSelector((state) => state.orders.ordersByUser);
+
+  // Fetch categories and recipes when needed
   useEffect(() => {
     if (categoryStatus === "idle") {
       dispatch(fetchCategories());
@@ -63,6 +69,51 @@ export default function AdminDashboard() {
       dispatch(fetchRecipes());
     }
   }, [dispatch, categoryStatus, recipeStatus]);
+
+  // Collect all orders and remove duplicates.
+  // Uses the same unique-order logic as AdminOrder.jsx.
+  const orders = useMemo(() => {
+    const allOrders = Object.entries(ordersByUser || {}).flatMap(
+      ([userId, userOrders]) =>
+        (Array.isArray(userOrders) ? userOrders : []).map((order) => ({
+          ...order,
+          userId,
+        })),
+    );
+
+    const seenOrderIds = new Set();
+
+    return allOrders.filter((order) => {
+      if (!order?.id) {
+        return false;
+      }
+
+      const uniqueKey = `${order.userId}-${order.id}`;
+
+      if (seenOrderIds.has(uniqueKey)) {
+        return false;
+      }
+
+      seenOrderIds.add(uniqueKey);
+      return true;
+    });
+  }, [ordersByUser]);
+
+  // Dynamic total order count
+  const totalOrders = orders.length;
+
+  // Dynamic pending order count
+  // Missing or invalid statuses are treated as Pending,
+  // matching the AdminOrder.jsx page.
+  const pendingOrders = useMemo(() => {
+    return orders.filter((order) => {
+      const status = STATUS_OPTIONS.includes(order.status)
+        ? order.status
+        : "Pending";
+
+      return status === "Pending";
+    }).length;
+  }, [orders]);
 
   const dashboardCards = [
     {
@@ -81,14 +132,14 @@ export default function AdminDashboard() {
     },
     {
       title: "Total Orders",
-      value: 5,
+      value: totalOrders,
       icon: ClipboardList,
       link: "/admin/order",
       linkText: "View all orders",
     },
     {
       title: "Pending Orders",
-      value: 1,
+      value: pendingOrders,
       icon: Clock,
       link: "/admin/order",
       linkText: "View pending orders",

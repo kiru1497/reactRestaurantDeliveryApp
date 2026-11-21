@@ -7,6 +7,9 @@ import UserHome from "./pages/UserHome";
 
 import CategoryRecipes from "./pages/user/CategoryRecipes";
 import Cart from "./pages/user/Cart";
+import Checkout from "./pages/user/Checkout";
+import OrderConfirmation from "./pages/user/OrderConfirmation";
+import OrderHistory from "./pages/user/OrderHistory";
 
 import AdminRoute from "./routes/AdminRoute";
 import UserRoute from "./routes/UserRoute";
@@ -32,14 +35,23 @@ function App() {
       <Route element={<UserRoute />}>
         <Route path="/home" element={<UserHome />} />
 
-        {/* Category-specific recipe page */}
+        {/* Category-specific recipes */}
         <Route
           path="/categories/:categoryId/recipes"
           element={<CategoryRecipes />}
         />
 
-        {/* Cart */}
+        {/* Shopping cart */}
         <Route path="/cart" element={<Cart />} />
+
+        {/* Checkout */}
+        <Route path="/checkout" element={<Checkout />} />
+
+        {/* Order confirmation */}
+        <Route path="/order-confirmation" element={<OrderConfirmation />} />
+
+        {/* Order history */}
+        <Route path="/order-history" element={<OrderHistory />} />
       </Route>
 
       {/* Admin login */}
