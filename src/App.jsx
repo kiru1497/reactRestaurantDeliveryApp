@@ -5,6 +5,9 @@ import Signup from "./pages/Signup";
 import AdminLogin from "./pages/AdminLogin";
 import UserHome from "./pages/UserHome";
 
+import CategoryRecipes from "./pages/user/CategoryRecipes";
+import Cart from "./pages/user/Cart";
+
 import AdminRoute from "./routes/AdminRoute";
 import UserRoute from "./routes/UserRoute";
 
@@ -28,6 +31,15 @@ function App() {
       {/* Protected customer routes */}
       <Route element={<UserRoute />}>
         <Route path="/home" element={<UserHome />} />
+
+        {/* Category-specific recipe page */}
+        <Route
+          path="/categories/:categoryId/recipes"
+          element={<CategoryRecipes />}
+        />
+
+        {/* Cart */}
+        <Route path="/cart" element={<Cart />} />
       </Route>
 
       {/* Admin login */}
@@ -36,7 +48,6 @@ function App() {
       {/* Protected admin routes */}
       <Route element={<AdminRoute />}>
         <Route path="/admin" element={<AdminLayout />}>
-          {/* Admin default landing page */}
           <Route index element={<Navigate to="dashboard" replace />} />
 
           <Route path="dashboard" element={<AdminDashboard />} />

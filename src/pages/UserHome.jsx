@@ -4,17 +4,18 @@ import { useNavigate } from "react-router-dom";
 
 import { Utensils, ImageOff, LoaderCircle, ArrowRight } from "lucide-react";
 
-import UserNavbar from "../components/user/UserNavBar";
+import UserNavBar from "../components/user/UserNavBar";
 
 import { logout } from "../features/auth/authSlice";
 
 import { fetchCategories } from "../features/categories/categoriesSlice";
 import { fetchRecipes } from "../features/recipes/recipesSlice";
 
-function CategoryCard({ category }) {
+function CategoryCard({ category, onClick }) {
   return (
     <button
       type="button"
+      onClick={onClick}
       className="group overflow-hidden rounded-xl border border-stone-200 bg-white text-left shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
     >
       <div className="relative h-44 overflow-hidden bg-stone-100 sm:h-48">
@@ -78,7 +79,7 @@ export default function UserHome() {
 
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch data from existing Redux/Firebase implementation.
+  // Fetch categories and recipes.
   useEffect(() => {
     if (categoriesStatus === "idle") {
       dispatch(fetchCategories());
@@ -124,6 +125,18 @@ export default function UserHome() {
     return [...matchingCategories, ...matchingRecipes];
   }, [searchQuery, categories, recipes]);
 
+  // Navigate when a search result is selected.
+  const handleSearchResultClick = (result) => {
+    if (result.type === "category") {
+      navigate(`/categories/${result.id}/recipes`);
+      return;
+    }
+
+    if (result.type === "recipe" && result.categoryId) {
+      navigate(`/categories/${result.categoryId}/recipes`);
+    }
+  };
+
   // Logout.
   const handleLogout = () => {
     dispatch(logout());
@@ -139,10 +152,11 @@ export default function UserHome() {
 
   return (
     <div className="min-h-screen bg-[#FAF8F5]">
-      <UserNavbar
+      <UserNavBar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         searchResults={searchResults}
+        onResultClick={handleSearchResultClick}
         onLogout={handleLogout}
       />
 
@@ -173,7 +187,7 @@ export default function UserHome() {
             </button>
           </SectionHeading>
 
-          {/* Loading state */}
+          {/* Loading */}
           {isLoading && (
             <div className="flex min-h-48 items-center justify-center">
               <div className="flex items-center gap-3 text-stone-500">
@@ -184,7 +198,7 @@ export default function UserHome() {
             </div>
           )}
 
-          {/* Error state */}
+          {/* Error */}
           {!isLoading && error && (
             <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
               Unable to load menu: {error}
@@ -195,7 +209,11 @@ export default function UserHome() {
           {!isLoading && !error && categories.length > 0 && (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {categories.map((category) => (
-                <CategoryCard key={category.id} category={category} />
+                <CategoryCard
+                  key={category.id}
+                  category={category}
+                  onClick={() => navigate(`/categories/${category.id}/recipes`)}
+                />
               ))}
             </div>
           )}
@@ -230,9 +248,11 @@ export default function UserHome() {
             ) : (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {searchResults.map((result) => (
-                  <div
+                  <button
                     key={`${result.type}-${result.id}`}
-                    className="flex items-center gap-4 rounded-xl border border-stone-200 bg-white p-3 shadow-sm"
+                    type="button"
+                    onClick={() => handleSearchResultClick(result)}
+                    className="flex items-center gap-4 rounded-xl border border-stone-200 bg-white p-3 text-left shadow-sm transition hover:border-orange-200 hover:bg-orange-50"
                   >
                     {result.imageUrl ? (
                       <img
@@ -261,7 +281,7 @@ export default function UserHome() {
                         </p>
                       )}
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             )}
